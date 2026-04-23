@@ -1,14 +1,29 @@
 pipeline {
-    agent any 
+    // Acá ocurre la magia: Jenkins levanta un contenedor de Node exclusivo para este Job
+    agent {
+        docker { 
+            image 'node:20-alpine' 
+        }
+    }
+    
     stages {
-        stage('Descarga') {
+        stage('Preparación') {
             steps {
-                echo '✅ Código descargado exitosamente'
+                echo '✅ Contenedor Node.js listo. Verificando versión...'
+                sh 'node -v'
+                sh 'npm -v'
             }
         }
-        stage('Magia') {
+        stage('Instalar Dependencias') {
             steps {
-                echo '🚀 ¡GitHub le avisó a Jenkins a través de Ngrok y arrancó solo!'
+                echo '📦 Instalando librerías del package.json...'
+                sh 'npm install'
+            }
+        }
+        stage('Verificación') {
+            steps {
+                echo '🔍 Verificando que la carpeta node_modules se haya creado correctamente:'
+                sh 'ls -la'
             }
         }
     }
